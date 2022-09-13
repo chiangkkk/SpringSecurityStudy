@@ -58,8 +58,8 @@ public class HelloController {
         return "1234";
     }
 
-    @GetMapping("/login")
-    public Principal login(String username, String password) {
+    @RequestMapping("/login")
+    public Object login(String username, String password) {
         Authentication authentication = null;
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -67,8 +67,7 @@ public class HelloController {
             e.printStackTrace();
             throw e;
         }
-        Object principal = authentication.getPrincipal();
-        return (Principal) authentication.getPrincipal();
+        return  authentication.getPrincipal();
     }
 
 }
