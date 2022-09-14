@@ -3,6 +3,7 @@ package org.chiangkai.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,22 +43,39 @@ public class HelloController {
 
     @RequestMapping("/test")
     public String hello() {
-
         return "hello";
+    }
+
+    @PreAuthorize("hasRole('role1')")
+    @RequestMapping("/role1")
+    public String role1() {
+        return "role1";
+    }
+
+    @PreAuthorize("hasAuthority('auth1')")
+    @RequestMapping("/auth1")
+    public String auth1() {
+        return "auth1";
     }
 
     @RequestMapping("/forceLogin")
     public String login(HttpServletRequest request) {
-        GrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("role1");
+        GrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("auth1");
         List<GrantedAuthority> roles = new ArrayList<>();
         roles.add(simpleGrantedAuthority);
         UserDetails user = new User("user", passwordEncoder.encode("abc"), roles);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, roles);
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "1234";
+        return "给予权限 auth1 可访问 /auth1";
     }
 
+    /**
+     * 角色role1 登录
+     * @param username
+     * @param password
+     * @return
+     */
     @RequestMapping("/login")
     public Object login(String username, String password) {
         Authentication authentication = null;
@@ -67,7 +85,8 @@ public class HelloController {
             e.printStackTrace();
             throw e;
         }
-        return  authentication.getPrincipal();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication.getPrincipal();
     }
 
 }
