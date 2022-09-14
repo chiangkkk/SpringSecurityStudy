@@ -38,7 +38,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
 //                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests(authorize -> authorize.antMatchers("/login", "/forceLogin")
+                .authorizeRequests(authorize -> authorize.antMatchers("/login", "/forceLogin","/t")
                         .anonymous()
                         .anyRequest().authenticated()
                 ).csrf().disable().userDetailsService(userDetailsService)
